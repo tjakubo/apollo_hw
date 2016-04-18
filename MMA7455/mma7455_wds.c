@@ -19,6 +19,7 @@ meas_8b mma_measure8b()
 	return measure;
 }
 
+
 void mma_cal_default()
 {
 	TWI_write_byte(ACC_ADDR, X_CAL_ADDR, X_CAL_DEF);

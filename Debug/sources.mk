@@ -22,12 +22,12 @@ C_DEPS :=
 SUBDIRS := \
 I2C_TWI \
 LCD \
-MKUART \
 MMA7455 \
 Release/I2C_TWI \
 Release/LCD \
 Release/MKUART \
 Release/MMA7455 \
 Release \
+UART \
 . \
 
