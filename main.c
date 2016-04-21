@@ -10,16 +10,24 @@
 #include "MMA7455/mma7455_wds.h"
 #include "UART/uart_wds.h"
 
-#define STRLEN 30
+#define STRLEN 40
 char out[STRLEN];
 
 void sendMeas()
 {
-	meas_8b meas = mma_measure8b();
+	ADCSRA |= (1<<ADSC);
+
+	static meas_8b meas;
+	static uint16_t adcMeas;
+
+	meas = mma_measure8b();
 
 	//sprintf(out, "X:%4d Y:%4d Z:%4d \r\n", meas.x, meas.y, meas.z);
 	//uart_puts(out);
-	sprintf(out, "b %d %d %d e", meas.x, meas.y, meas.z);
+	//sprintf(out, "b %d %d %d e", meas.x, meas.y, meas.z);
+	while(ADCSRA & (1<<ADSC));
+	adcMeas = ADC;
+	sprintf(out, "b %d %d %d %d e", meas.x, meas.y, meas.z, adcMeas);
 	uart_puts(out);
 	return;
 }
@@ -48,13 +56,13 @@ ISR( USART_RXC_vect ) {
 
 int main(void) {
 
-	DDRA |= (1<<PA7);
-	PORTA |= (1<<PA7);
-	DDRC |= (1<<PC2);
-	PORTC |= (1<<PC2);
+	DDRC |= (1<<PC2) | (1<<PC3) | (1<<PC4);
+	PORTC |= (1<<PC2) | (1<<PC3);
+	PORTC &= ~(1<<PC4);
 
-	lcd_init();
-	lcd_cls();
+	ADMUX = (1<<REFS0);
+	ADCSRA = (1<<ADEN) | (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
+
 	i2cSetBitrate( 125 );
 	mma_wds_init();
 	USART_Init( __UBRR );
