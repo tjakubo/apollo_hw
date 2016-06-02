@@ -27,7 +27,8 @@ void sendMeas()
 	//sprintf(out, "b %d %d %d e", meas.x, meas.y, meas.z);
 	while(ADCSRA & (1<<ADSC));
 	adcMeas = ADC;
-	sprintf(out, "b %d %d %d %d e", meas.x, meas.y, meas.z, adcMeas);
+	int16_t checksum = (meas.x ^ meas.y ^ meas.z ^ adcMeas);
+	sprintf(out, "b %d %d %d %d %d e", meas.x, meas.y, meas.z, adcMeas, checksum);
 	uart_puts(out);
 	return;
 }
